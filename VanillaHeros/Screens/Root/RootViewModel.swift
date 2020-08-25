@@ -13,7 +13,9 @@ struct RootViewModel: ViewModel {
     
     init(environment: Environment) {
         store = Store(
-            initialState: State(),
+            initialState: State(
+                isFavouritesOnlyFilterOn: environment.favourites.isFavouritesOnlyFilterOn
+            ),
             environment: environment,
             reduce: Self.reduce
         )
@@ -29,10 +31,13 @@ struct RootViewModel: ViewModel {
             state.status = .loading
             var effects = [
                 Effect<Action> { completion in
-                    environment.herosProvider.fetchHeros { result in
+                    synchronize(
+                        environment.herosProvider.fetchHeros,
+                        environment.favourites.loadFavourites
+                    ) { result in
                         switch result {
-                        case .success(let heros):
-                            completion(.didLoad(heros: heros))
+                        case .success(let (heros, favourites)):
+                            completion(.didLoad(heros: heros, favourites: favourites))
                         case .failure:
                             completion(.didFailToLoadHeros)
                         }
@@ -41,16 +46,17 @@ struct RootViewModel: ViewModel {
             ]
             if state.favouritesDisposable == nil {
                 effects.append(Effect<Action> { completion in
-                    let disposable = environment.herosProvider.observeFavourites { favourites in
-                        completion(.didUpdate(favourites: favourites))
+                    let disposable = environment.favourites.observeFavourites { favourites, isFavouritesOnlyFilterOn in
+                        completion(.didUpdate(favourites: favourites, isFavouritesOnlyFilterOn: isFavouritesOnlyFilterOn))
                     }
                     completion(.didSubscribeToFavourites(disposable: disposable))
                 })
             }
             return .effect(Effects.merge(effects: effects))
-        case .didLoad(heros: let heros):
+        case let .didLoad(heros: heros, favourites: favourites):
             state.status = .loaded
             state.heros = heros
+            state.favouriteHeroIds = favourites
             return .none
         case .didFailToLoadHeros:
             state.status = .failed
@@ -79,9 +85,12 @@ struct RootViewModel: ViewModel {
                     }
                 }
             })
-        case let .didUpdate(favourites):
+        case let .didUpdate(favourites, isFavouritesOnlyFilterOn):
             state.favouriteHeroIds = favourites
+            state.isFavouritesOnlyFilterOn = isFavouritesOnlyFilterOn
             return .none
+        case .openFilters:
+            return .route(.openFilters)
         }
     }
  
@@ -89,7 +98,8 @@ struct RootViewModel: ViewModel {
         var status = Status.idle
         var heros = [Hero]()
         var herosToImageData = [Hero: Data]()
-        var favouriteHeroIds = [Int]()
+        var favouriteHeroIds = Set<Int>()
+        var isFavouritesOnlyFilterOn: Bool
         fileprivate var favouritesDisposable: Disposable?
     }
     
@@ -102,7 +112,7 @@ struct RootViewModel: ViewModel {
     
     enum Action {
         case load
-        case didLoad(heros: [Hero])
+        case didLoad(heros: [Hero], favourites: Set<Int>)
         case didFailToLoadHeros
         case retry
         case didFetchImageData(data: Data, hero: Hero)
@@ -110,14 +120,17 @@ struct RootViewModel: ViewModel {
         case didSubscribeToFavourites(disposable: Disposable)
         case didSelect(hero: Hero)
         case needsPictureForHero(hero: Hero)
-        case didUpdate(favourites: [Int])
+        case didUpdate(favourites: Set<Int>, isFavouritesOnlyFilterOn: Bool)
+        case openFilters
     }
     
     struct Environment {
+        let favourites: Favourites
         let herosProvider: HerosProvider
     }
     
     enum Route {
         case heroSelected(hero: Hero, heroImageData: Data?)
+        case openFilters
     }
 }

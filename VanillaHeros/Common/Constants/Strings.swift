@@ -14,4 +14,9 @@ enum Strings {
     static let didFailToLoadHeros = "Did fail to load heros"
     static let thisHeroDoesNotHaveADescription = "This hero does not have a description"
     static let retry = "Retry"
+    static let favouritesFilename: String = "favourites.json"
+    static let filters = "Filters"
+    static let showsOnlyFavouriteHeros = "Shows only favourite heros"
+    static let done = "Done"
+    static let noFavouritesHeros = "No favourites heros"     
 }

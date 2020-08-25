@@ -26,11 +26,12 @@ class RootView: UIView {
         loadingView.isHidden = true
         loadingView.stopAnimating()
         loadedView.isHidden = true
+        loadedView.noFavouritesHerosLabel.isHidden = true
         failedView.isHidden = true
     }
     
     private func setupView() {
-        backgroundColor = Colors.background
+        backgroundColor = Colors.backgroundColor
         
         addSubview(loadingView)
         loadingView.translatesAutoresizingMaskIntoConstraints = false
@@ -56,9 +57,21 @@ class RootView: UIView {
 class LoadedView: UIView, UITableViewDataSource, UITableViewDelegate {
     var didSelectHero: ((Hero) -> Void)?
     var needsPictureForHero: ((Hero) -> Void)?
-    var heros = [Hero]() {
+    var isFavouritesOnlyFilterOn = false
+    var allHeros = [Hero]() {
         didSet {
-            if heros != oldValue {
+            if isFavouritesOnlyFilterOn {
+                herosToPresent = allHeros.filter {
+                    favouriteHeroIds.contains($0.id)
+                }
+            } else {
+                herosToPresent = allHeros
+            }
+        }
+    }
+    var herosToPresent = [Hero]() {
+        didSet {
+            if herosToPresent != oldValue {
                 tableView.reloadData()
             }
         }
@@ -68,7 +81,7 @@ class LoadedView: UIView, UITableViewDataSource, UITableViewDelegate {
             reloadImages()
         }
     }
-    var favouriteHeroIds = [Int]() {
+    var favouriteHeroIds = Set<Int>() {
         didSet {
             if favouriteHeroIds != oldValue {
                 reloadVisibleCells()
@@ -76,6 +89,7 @@ class LoadedView: UIView, UITableViewDataSource, UITableViewDelegate {
         }
     }
     let tableView = UITableView()
+    let noFavouritesHerosLabel = UILabel()
     
     init() {
         super.init(frame: .zero)
@@ -87,7 +101,7 @@ class LoadedView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
     
     private func setupView() {
-        tableView.backgroundColor = Colors.background
+        tableView.backgroundColor = Colors.backgroundColor
         
         tableView.register(HeroCell.self)
         tableView.separatorStyle = .none
@@ -99,10 +113,17 @@ class LoadedView: UIView, UITableViewDataSource, UITableViewDelegate {
         tableView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         tableView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        
+        noFavouritesHerosLabel.text = Strings.noFavouritesHeros
+        noFavouritesHerosLabel.textColor = Colors.textColor
+        addSubview(noFavouritesHerosLabel)
+        noFavouritesHerosLabel.translatesAutoresizingMaskIntoConstraints = false
+        noFavouritesHerosLabel.centerXAnchor.constraint(equalTo: layoutMarginsGuide.centerXAnchor).isActive = true
+        noFavouritesHerosLabel.centerYAnchor.constraint(equalTo: layoutMarginsGuide.centerYAnchor).isActive = true
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        heros.count
+        herosToPresent.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -112,7 +133,7 @@ class LoadedView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let hero = heros[indexPath.row]
+        let hero = herosToPresent[indexPath.row]
         didSelectHero?(hero)
     }
     
@@ -124,7 +145,7 @@ class LoadedView: UIView, UITableViewDataSource, UITableViewDelegate {
         let cells: [HeroCell] = tableView.viewsInside()
         for cell in cells {
             if let indexPath = tableView.indexPathForRow(at: cell.center) {
-                let hero = heros[indexPath.row]
+                let hero = herosToPresent[indexPath.row]
                 if herosToImageData[hero] != nil {
                     configure(heroCell: cell, indexPath: indexPath)
                 }                
@@ -142,7 +163,7 @@ class LoadedView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
     
     private func configure(heroCell: HeroCell, indexPath: IndexPath) {
-        let hero = heros[indexPath.row]
+        let hero = herosToPresent[indexPath.row]
         if let heroImage = herosToImageData[hero].flatMap(UIImage.init(data:)) {
             heroCell.heroImageView.image = heroImage
         } else {
@@ -187,7 +208,7 @@ class HeroCell: UITableViewCell {
     }
     
     private func setupView() {
-        backgroundColor = Colors.background
+        backgroundColor = Colors.backgroundColor
         
         backView.backgroundColor = Colors.rowColor
         backView.layer.cornerRadius = 8
@@ -256,7 +277,7 @@ class FailedView: UIView {
         failedLabel.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor).isActive = true
         
         retryButton.addTarget(self, action: #selector(retryTouchUpInside), for: .touchUpInside)
-        retryButton.backgroundColor = .red
+        retryButton.backgroundColor = Colors.buttonColor
         retryButton.layer.cornerRadius = 8
         retryButton.setTitle(Strings.retry, for: .normal)
         addSubview(retryButton)

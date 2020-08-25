@@ -8,7 +8,7 @@
 
 import UIKit
 
-struct RootRouteController {
+struct RootRoutesController {
     private let navigationController: UINavigationController
     
     init(navigationController: UINavigationController) {
@@ -20,6 +20,11 @@ struct RootRouteController {
         case let .heroSelected(hero, heroImageData):
             let detailsViewController = DetailsBuilder.make(hero: hero, heroImageData: heroImageData)
             navigationController.pushViewController(detailsViewController, animated: true)
+        case .openFilters:
+            let filtersViewController = FiltersBuilder.make(
+                presentingViewController: navigationController
+            )
+            navigationController.present(filtersViewController, animated: true)
         }
     }
 }

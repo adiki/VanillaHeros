@@ -11,10 +11,6 @@ import Foundation
 protocol HerosProvider {
     func fetchHeros(completion: @escaping (Result<[Hero], Error>) -> Void)
     func imageData(forHero hero: Hero, completion: @escaping (Result<Data, Error>) -> Void)
-    func isHeroFavourite(hero: Hero) -> Bool
-    func addHeroToFavourites(hero: Hero) -> Void
-    func removeHeroFromFavourites(hero: Hero) -> Void
-    func observeFavourites(callback: @escaping ([Int]) -> Void) -> Disposable
 }
 
 enum ImageSize: String {
@@ -29,15 +25,9 @@ enum ProviderError: Error {
     case serverError
 }
 
-class HerosNetworkProvider: HerosProvider {
-    static let shared = HerosNetworkProvider(
-        urlSession: URLSession.shared,
-        jsonDecoder: JSONDecoder()
-    )
-    let observations = Observations<[Int]>()
+class HerosNetworkProvider: HerosProvider {    
     private let urlSession: URLSession
     private let jsonDecoder: JSONDecoder
-    private var favouriteHeroIds = [Int]()
     
     init(
          urlSession: URLSession,
@@ -81,24 +71,6 @@ class HerosNetworkProvider: HerosProvider {
             imageSize: .square,
             completion: completion
         )
-    }
-    
-    func isHeroFavourite(hero: Hero) -> Bool {
-        favouriteHeroIds.contains(hero.id)
-    }
-    
-    func addHeroToFavourites(hero: Hero) {
-        favouriteHeroIds.append(hero.id)
-        observations.didUpdate(subject: favouriteHeroIds)
-    }
-    
-    func removeHeroFromFavourites(hero: Hero) {
-        favouriteHeroIds.removeAll(where: { $0 == hero.id })
-        observations.didUpdate(subject: favouriteHeroIds)
-    }
-    
-    func observeFavourites(callback: @escaping ([Int]) -> Void) -> Disposable {
-        observations.add(callback: callback)
     }
     
     private func imageData(

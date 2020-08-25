@@ -34,7 +34,7 @@ struct DetailsViewModel: ViewModel {
         switch action {
         case .initialize:
             let hero = state.hero
-            state.isHeroFavourite = environment.herosProvider.isHeroFavourite(hero: hero)
+            state.isHeroFavourite = environment.favourites.isHeroFavourite(hero: hero)
             if state.heroImageData == nil {
                 return .effect(Effect<Action> { completion in
                     environment.herosProvider.imageData(forHero: hero) { result in
@@ -56,12 +56,21 @@ struct DetailsViewModel: ViewModel {
             return .none
         case .favouritesButtonTapped:
             let hero = state.hero
-            if environment.herosProvider.isHeroFavourite(hero: hero) {
-                environment.herosProvider.removeHeroFromFavourites(hero: hero)
+            if environment.favourites.isHeroFavourite(hero: hero) {
+                environment.favourites.removeHeroFromFavourites(hero: hero)
             } else {
-                environment.herosProvider.addHeroToFavourites(hero: hero)
+                environment.favourites.addHeroToFavourites(hero: hero)
             }
-            state.isHeroFavourite = environment.herosProvider.isHeroFavourite(hero: hero)
+            state.isHeroFavourite = environment.favourites.isHeroFavourite(hero: hero)
+            return .effect(Effect<Action> { completion in
+                environment.favourites.saveFavourites { result in
+                    switch result {
+                    case let .failure(error):
+                        completion(.didFailToSaveFavourites(error: error))
+                    }
+                }
+            })
+        case .didFailToSaveFavourites:
             return .none
         }
     }
@@ -77,9 +86,11 @@ struct DetailsViewModel: ViewModel {
         case didFetchImageData(data: Data)
         case didFailToFetchHeroImageData
         case favouritesButtonTapped
+        case didFailToSaveFavourites(error: Error)
     }
     
     struct Environment {
+        let favourites: Favourites
         let herosProvider: HerosProvider
     }
     

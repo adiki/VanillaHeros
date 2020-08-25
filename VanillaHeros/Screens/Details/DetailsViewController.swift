@@ -9,17 +9,17 @@
 import UIKit
 
 class DetailsViewController: UIViewController {
-    private let detailsViewModel: DetailsViewModel
+    private let viewModel: DetailsViewModel
     
     var detailsView: DetailsView {
         return view as! DetailsView
     }
     
-    init(detailsViewModel: DetailsViewModel) {
-        self.detailsViewModel = detailsViewModel
+    init(viewModel: DetailsViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         
-        self.detailsViewModel.store.didUpdateState = { [weak self] state in
+        self.viewModel.store.didUpdateState = { [weak self] state in
             DispatchQueue.main.async {
                 self?.render(state: state)
             }
@@ -36,7 +36,7 @@ class DetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        detailsViewModel.send(action: .initialize)
+        viewModel.send(action: .initialize)
     }
     
     func render(state: DetailsViewModel.State) {
@@ -48,7 +48,7 @@ class DetailsViewController: UIViewController {
             for: .normal
         )
         detailsView.favouritesButtonTapped = { [weak self] in
-            self?.detailsViewModel.send(action: .favouritesButtonTapped)
+            self?.viewModel.send(action: .favouritesButtonTapped)
         }
         if state.hero.description.isEmpty {
             detailsView.descriptionLabel.font = font.italic()

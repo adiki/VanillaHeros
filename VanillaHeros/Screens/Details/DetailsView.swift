@@ -26,7 +26,7 @@ class DetailsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     private func setupView() {
-        backgroundColor = Colors.background
+        backgroundColor = Colors.backgroundColor
         
         scrollView.alwaysBounceVertical = true
         addSubview(scrollView)
@@ -62,7 +62,7 @@ class DetailsView: UIView {
             action: #selector(favouritesButtonTouchUpInside),
             for: .touchUpInside
         )
-        favouritesButton.backgroundColor = .red
+        favouritesButton.backgroundColor = Colors.buttonColor
         favouritesButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body).bold()
         favouritesButton.layer.cornerRadius = 8
         stackView.addArrangedSubview(favouritesButton)
