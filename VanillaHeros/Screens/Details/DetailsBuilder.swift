@@ -20,7 +20,8 @@ enum DetailsBuilder {
         let viewModel = DetailsViewModel(
             hero: hero,
             heroImageData: heroImageData,
-            environment: environment
+            environment: environment,
+            scheduler: DispatchScheduler(dispatchQueue: .global())
         )
         return DetailsViewController(viewModel: viewModel)
     }

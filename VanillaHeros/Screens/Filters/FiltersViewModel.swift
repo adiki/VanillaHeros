@@ -11,13 +11,14 @@ import Foundation
 struct FiltersViewModel: ViewModel {
     var store: Store<State, Action, Environment, Route>
     
-    init(environment: Environment) {
+    init(environment: Environment, scheduler: Scheduler) {
         store = Store(
             initialState: State(
                 isFavouritesOnlyFilterOn: environment.favourites.isFavouritesOnlyFilterOn
             ),
             environment: environment,
-            reduce: Self.reduce
+            reduce: Self.reduce,
+            scheduler: scheduler
         )
     }
     
@@ -28,8 +29,8 @@ struct FiltersViewModel: ViewModel {
     static func reduce(state: inout State, action: Action, environment: Environment) -> Outcome<Action, Route> {
         switch action {
         case let .favouritesOnlyFilterChanged(isOn):
-            environment.favourites.isFavouritesOnlyFilterOn.toggle()
-            state.isFavouritesOnlyFilterOn = environment.favourites.isFavouritesOnlyFilterOn
+            environment.favourites.isFavouritesOnlyFilterOn = isOn
+            state.isFavouritesOnlyFilterOn = isOn
             return .none
         case .done:
             return .route(.done)

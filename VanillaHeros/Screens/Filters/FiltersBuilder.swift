@@ -13,13 +13,18 @@ enum FiltersBuilder {
         let environment = FiltersViewModel.Environment(
             favourites: FavouritesManager.shared
         )
-        let viewModel = FiltersViewModel(environment: environment)
+        let viewModel = FiltersViewModel(
+            environment: environment,
+            scheduler: DispatchScheduler(dispatchQueue: .global())
+        )
         let viewController = FiltersViewController(viewModel: viewModel)
         let routesController = FiltersRouteController(
             presentingViewController: presentingViewController
         )
         viewModel.store.handleRoute = { route in
-            routesController.handle(route: route)
+            DispatchQueue.main.async {
+                routesController.handle(route: route)
+            }
         }
         return viewController
     }

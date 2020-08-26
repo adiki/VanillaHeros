@@ -15,9 +15,13 @@ enum RootBuilder {
             herosProvider: HerosNetworkProvider(
                 urlSession: URLSession.shared,
                 jsonDecoder: JSONDecoder()
-            )
+            ),
+            synchronize: DispatchGroupSynchronize()
         )
-        let viewModel = RootViewModel(environment: environment)
+        let viewModel = RootViewModel(
+            environment: environment,
+            scheduler: DispatchScheduler(dispatchQueue: .global())
+        )
         let rootViewController = RootViewController(viewModel: viewModel)
         let navigationController = UINavigationController(
             rootViewController: rootViewController
@@ -26,7 +30,9 @@ enum RootBuilder {
             navigationController: navigationController
         )
         viewModel.store.handleRoute = { route in
-            routesController.handle(route: route)
+            DispatchQueue.main.async {
+                routesController.handle(route: route)
+            }
         }
         navigationController.navigationBar.barStyle = .black
         navigationController.navigationBar.tintColor = .white

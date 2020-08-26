@@ -14,7 +14,8 @@ struct DetailsViewModel: ViewModel {
     init(
         hero: Hero,
         heroImageData: Data?,
-        environment: Environment
+        environment: Environment,
+        scheduler: Scheduler
     ) {
         store = Store(
             initialState: State(
@@ -22,7 +23,8 @@ struct DetailsViewModel: ViewModel {
                 heroImageData: heroImageData
             ),
             environment: environment,
-            reduce: Self.reduce
+            reduce: Self.reduce,
+            scheduler: scheduler
         )
     }
     

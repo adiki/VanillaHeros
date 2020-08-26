@@ -11,13 +11,14 @@ import Foundation
 struct RootViewModel: ViewModel {
     var store: Store<State, Action, Environment, Route>
     
-    init(environment: Environment) {
+    init(environment: Environment, scheduler: Scheduler) {
         store = Store(
             initialState: State(
                 isFavouritesOnlyFilterOn: environment.favourites.isFavouritesOnlyFilterOn
             ),
             environment: environment,
-            reduce: Self.reduce
+            reduce: Self.reduce,
+            scheduler: scheduler
         )
     }
     
@@ -31,7 +32,7 @@ struct RootViewModel: ViewModel {
             state.status = .loading
             var effects = [
                 Effect<Action> { completion in
-                    synchronize(
+                    environment.synchronize.sync(
                         environment.herosProvider.fetchHeros,
                         environment.favourites.loadFavourites
                     ) { result in
@@ -127,9 +128,10 @@ struct RootViewModel: ViewModel {
     struct Environment {
         let favourites: Favourites
         let herosProvider: HerosProvider
+        let synchronize: Synchronize
     }
     
-    enum Route {
+    enum Route: Equatable {
         case heroSelected(hero: Hero, heroImageData: Data?)
         case openFilters
     }

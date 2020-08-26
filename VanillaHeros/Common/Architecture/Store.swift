@@ -18,16 +18,19 @@ class Store<State, Action, Environment, Route> {
     private(set) var state: State
     private let environment: Environment
     private let reduce: (inout State, Action, Environment) -> Outcome<Action, Route>
+    private let scheduler: Scheduler
     private let serialQueue = DispatchQueue(label: "Store serial queue")
     
     init(
         initialState: State,
         environment: Environment,
-        reduce: @escaping (inout State, Action, Environment) -> Outcome<Action, Route>
+        reduce: @escaping (inout State, Action, Environment) -> Outcome<Action, Route>,
+        scheduler: Scheduler
     ) {
         self.state = initialState
         self.environment = environment
         self.reduce = reduce
+        self.scheduler = scheduler
     }
     
     func send(action: Action) {
@@ -39,15 +42,13 @@ class Store<State, Action, Environment, Route> {
             case .none:
                 break
             case .effect(let effect):
-                DispatchQueue.global().async { [weak self] in
+                scheduler.async { [weak self] in
                     effect.run { action in
                         self?.send(action: action)
                     }
                 }
             case .route(let route):
-                DispatchQueue.main.async { [weak self] in
-                    self?.handleRoute?(route)
-                }
+                handleRoute?(route)
             }
         }
     }
