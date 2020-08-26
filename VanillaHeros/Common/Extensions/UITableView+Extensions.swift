@@ -19,5 +19,18 @@ extension UITableView {
         }
         return someCell
     }
+    
+    func reloadVisibleCells<Cell: UITableViewCell>(
+        predicate: (IndexPath) -> Bool = { _ in true },
+        configure: (Cell, IndexPath) -> Void
+    ) {
+        let cells: [Cell] = viewsInside()
+        for cell in cells {
+            if let indexPath = indexPathForRow(at: cell.center) {
+                if predicate(indexPath) {
+                    configure(cell, indexPath)
+                }
+            }
+        }
+    }
 }
-

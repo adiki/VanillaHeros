@@ -142,24 +142,19 @@ class LoadedView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
     
     private func reloadImages() {
-        let cells: [HeroCell] = tableView.viewsInside()
-        for cell in cells {
-            if let indexPath = tableView.indexPathForRow(at: cell.center) {
+        tableView.reloadVisibleCells(
+            predicate: { indexPath in
                 let hero = herosToPresent[indexPath.row]
-                if herosToImageData[hero] != nil {
-                    configure(heroCell: cell, indexPath: indexPath)
-                }                
-            }
-        }
+                return herosToImageData[hero] != nil
+            },
+            configure: configure(heroCell:indexPath:)
+        )
     }
     
     private func reloadVisibleCells() {
-        let cells: [HeroCell] = tableView.viewsInside()
-        for cell in cells {
-            if let indexPath = tableView.indexPathForRow(at: cell.center) {
-                configure(heroCell: cell, indexPath: indexPath)
-            }
-        }
+        tableView.reloadVisibleCells(
+            configure: configure(heroCell:indexPath:)
+        )
     }
     
     private func configure(heroCell: HeroCell, indexPath: IndexPath) {
