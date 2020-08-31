@@ -83,8 +83,8 @@ class FavouritesManager: Favourites {
                 } catch {
                     completion(.failure(error))
                 }
-            case let .failure(error):
-                completion(.failure(error))
+            case .failure:
+                completion(.success([]))
             }
         }
     }

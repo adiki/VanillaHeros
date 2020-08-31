@@ -45,21 +45,17 @@ class HerosNetworkProvider: HerosProvider {
             return completion(.failure(ProviderError.invalidURL))
         }
         
-        urlSession.dataTask(with: authenticatedURL) { [jsonDecoder] data, response, error in
-            if let error = error {
-                completion(.failure(ProviderError.networkError(error)))
-            }
-            let statusCode = (response as! HTTPURLResponse).statusCode
-            guard (200...299).contains(statusCode) else {
-                completion(.failure(ProviderError.serverError))
-                return
-            }
-            if let data = data,
-                    let response = try? jsonDecoder.decode(HeroResponse.self, from: data) {
-                completion(.success(response.data.results))
-            } else {
-                completion(.failure(ProviderError.invalidResponse))
-            }
+        urlSession.dataTask(with: authenticatedURL) { [weak self, jsonDecoder] data, response, error in
+            self?.handleResponse(
+                data: data,
+                response: response,
+                error: error,
+                convert: { data in
+                    let response = try jsonDecoder.decode(HeroResponse.self, from: data)
+                    return response.data.results
+                },
+                completion: completion
+            )
         }
         .resume()
     }
@@ -85,22 +81,44 @@ class HerosNetworkProvider: HerosProvider {
             return completion(.failure(ProviderError.invalidURL))
         }
         
-        urlSession.dataTask(with: url) { data, response, error in
-            if let error = error {
-                completion(.failure(ProviderError.networkError(error)))
-            }
-            let statusCode = (response as! HTTPURLResponse).statusCode
-            guard (200...299).contains(statusCode) else {
-                completion(.failure(ProviderError.serverError))
-                return
-            }
-            if let data = data {
-                completion(.success(data))
-            } else {
-                completion(.failure(ProviderError.invalidResponse))
-            }
+        urlSession.dataTask(with: url) { [weak self] data, response, error in
+            self?.handleResponse(
+                data: data,
+                response: response,
+                error: error,
+                convert: { $0 },
+                completion: completion
+            )
         }
         .resume()
+    }
+
+    private func handleResponse<T>(
+        data: Data?,
+        response: URLResponse?,
+        error: Error?,
+        convert: (Data) throws -> T,
+        completion: @escaping (Result<T, Error>) -> Void
+    ) {
+        if let error = error {
+            completion(.failure(ProviderError.networkError(error)))
+            return
+        }
+        guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
+            (200...299).contains(statusCode) else {
+                completion(.failure(ProviderError.serverError))
+            return
+        }
+        if let data = data {
+            do {
+                let converted = try convert(data)
+                completion(.success(converted))
+            } catch {
+                completion(.failure(ProviderError.invalidResponse))
+            }
+        } else {
+            completion(.failure(ProviderError.invalidResponse))
+        }
     }
     
     private func authenticatedURL(forPath path: String, additionalQueryItems: [URLQueryItem] = []) -> URL? {
