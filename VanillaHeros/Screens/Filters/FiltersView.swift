@@ -28,15 +28,12 @@ class FiltersView: View {
     
     override func setupView() {
         backgroundColor = designLibrary.colors.background
-        
         favouritesLabel.text = Strings.showsOnlyFavouriteHeros
-        
         favouritesSwitch.addTarget(
             self,
             action: #selector(favouritesSwitchValueChanged),
             for: .valueChanged
         )
-        
         doneButton.addTarget(
             self,
             action: #selector(doneButtonTouchUpInside),

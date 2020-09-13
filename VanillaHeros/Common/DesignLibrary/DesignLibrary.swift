@@ -12,7 +12,10 @@ struct DesignLibrary {
     let colors: Colors
     let primaryButton: () -> UIButton
     let label: () -> UILabel
+    let imageView: () -> UIImageView
     let `switch`: () -> UISwitch
+    let scrollView: () -> UIScrollView
+    let stackView: () -> UIStackView
 }
 
 extension DesignLibrary {
@@ -21,7 +24,7 @@ extension DesignLibrary {
             static let standard = CGFloat(16)
         }
         enum PrimaryButton {
-            static let cornerRadius = CGFloat(16)
+            static let cornerRadius = CGFloat(8)
             static let height = CGFloat(50)
         }
     }
@@ -46,11 +49,32 @@ extension DesignLibrary {
                 label.translatesAutoresizingMaskIntoConstraints = false
                 return label
             },
+            imageView: {
+                let imageView = UIImageView()
+                imageView.backgroundColor = .gray
+                imageView.translatesAutoresizingMaskIntoConstraints = false
+                return imageView
+            },
             switch: {
                 let `switch` = UISwitch()
                 `switch`.onTintColor = .red
                 `switch`.translatesAutoresizingMaskIntoConstraints = false
                 return `switch`
+            },
+            scrollView: {
+                let scrollView = UIScrollView()
+                scrollView.alwaysBounceVertical = true
+                scrollView.translatesAutoresizingMaskIntoConstraints = false
+                return scrollView
+            },
+            stackView: {
+                let stackView = UIStackView()
+                stackView.axis = .vertical
+                stackView.spacing = Metrics.Padding.standard
+                stackView.alignment = .center
+                stackView.translatesAutoresizingMaskIntoConstraints = false
+                stackView.translatesAutoresizingMaskIntoConstraints = false
+                return stackView
             }
         )
     }
