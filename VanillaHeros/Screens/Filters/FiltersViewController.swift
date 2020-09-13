@@ -8,16 +8,15 @@
 
 import UIKit
 
-class FiltersViewController: UIViewController {
+class FiltersViewController: ViewController<FiltersView> {
     private let viewModel: FiltersViewModel
     
-    var filtersView: FiltersView {
-        return view as! FiltersView
-    }
-    
-    init(viewModel: FiltersViewModel) {
+    init(
+        viewModel: FiltersViewModel,
+        designLibrary: DesignLibrary
+    ) {
         self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
+        super.init(designLibrary: designLibrary)
         
         self.viewModel.store.didUpdateState = { [weak self] state in
             DispatchQueue.main.async {
@@ -30,16 +29,12 @@ class FiltersViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func loadView() {
-        view = FiltersView()
-    }
-    
     func render(state: FiltersViewModel.State) {
-        filtersView.favouritesSwitchChangedValue = { [weak self] isOn in
+        actualView.favouritesSwitchChangedValue = { [weak self] isOn in
             self?.viewModel.send(action: .favouritesOnlyFilterChanged(isOn: isOn))
         }
-        filtersView.favouritesSwitch.isOn = state.isFavouritesOnlyFilterOn
-        filtersView.doneButtonTapped = { [weak self] in
+        actualView.favouritesSwitch.isOn = state.isFavouritesOnlyFilterOn
+        actualView.doneButtonTapped = { [weak self] in
             self?.viewModel.send(action: .done)            
         }
     }

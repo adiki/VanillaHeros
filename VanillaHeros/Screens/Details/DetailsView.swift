@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DetailsView: UIView {
+class DetailsView: View {
     var favouritesButtonTapped: (() -> Void)?
     let scrollView = UIScrollView()
     let stackView = UIStackView()
@@ -17,15 +17,7 @@ class DetailsView: UIView {
     let favouritesButton = UIButton()
     let descriptionLabel = UILabel()
     
-    init() {
-        super.init(frame: .zero)
-        setupView()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    private func setupView() {
+    override func setupView() {
         backgroundColor = Colors.backgroundColor
         
         scrollView.alwaysBounceVertical = true

@@ -22,7 +22,10 @@ enum RootBuilder {
             environment: environment,
             scheduler: DispatchScheduler(dispatchQueue: .global())
         )
-        let rootViewController = RootViewController(viewModel: viewModel)
+        let rootViewController = RootViewController(
+            viewModel: viewModel,
+            designLibrary: .current
+        )
         let navigationController = UINavigationController(
             rootViewController: rootViewController
         )

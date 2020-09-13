@@ -17,7 +17,10 @@ enum FiltersBuilder {
             environment: environment,
             scheduler: DispatchScheduler(dispatchQueue: .global())
         )
-        let viewController = FiltersViewController(viewModel: viewModel)
+        let viewController = FiltersViewController(
+            viewModel: viewModel,
+            designLibrary: .current
+        )
         let routesController = FiltersRouteController(
             presentingViewController: presentingViewController
         )

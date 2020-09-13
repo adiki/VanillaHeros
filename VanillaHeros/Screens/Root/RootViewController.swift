@@ -8,20 +8,19 @@
 
 import UIKit
 
-class RootViewController: UIViewController {
+class RootViewController: ViewController<RootView> {
     private let viewModel: RootViewModel
     
-    var rootView: RootView {
-        return view as! RootView
-    }
-    
-    init(viewModel: RootViewModel) {
+    init(
+        viewModel: RootViewModel,
+        designLibrary: DesignLibrary
+    ) {
         self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
+        super.init(designLibrary: designLibrary)
         
         self.viewModel.store.didUpdateState = { [weak self] state in
             DispatchQueue.main.async {
-                self?.rootView.clearViews()
+                self?.actualView.clearViews()
                 self?.render(state: state)
             }
         }
@@ -29,10 +28,6 @@ class RootViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func loadView() {
-        view = RootView()
     }
     
     override func viewDidLoad() {
@@ -46,25 +41,25 @@ class RootViewController: UIViewController {
         case .idle:
             break
         case .loading:
-            rootView.loadingView.isHidden = false
-            rootView.loadingView.startAnimating()
+            actualView.loadingView.isHidden = false
+            actualView.loadingView.startAnimating()
         case .loaded:
-            rootView.loadedView.isHidden = false
-            rootView.loadedView.isFavouritesOnlyFilterOn = state.isFavouritesOnlyFilterOn
-            rootView.loadedView.herosToImageData = state.herosToImageData
-            rootView.loadedView.favouriteHeroIds = state.favouriteHeroIds
-            rootView.loadedView.allHeros = state.heros
-            rootView.loadedView.didSelectHero = { [weak self] hero in
+            actualView.loadedView.isHidden = false
+            actualView.loadedView.isFavouritesOnlyFilterOn = state.isFavouritesOnlyFilterOn
+            actualView.loadedView.herosToImageData = state.herosToImageData
+            actualView.loadedView.favouriteHeroIds = state.favouriteHeroIds
+            actualView.loadedView.allHeros = state.heros
+            actualView.loadedView.didSelectHero = { [weak self] hero in
                 self?.viewModel.send(action: .didSelect(hero: hero))
             }
-            rootView.loadedView.needsPictureForHero = { [weak self] hero in
+            actualView.loadedView.needsPictureForHero = { [weak self] hero in
                 self?.viewModel.send(action: .needsPictureForHero(hero: hero))
             }
-            rootView.loadedView.noFavouritesHerosLabel.isHidden =
+            actualView.loadedView.noFavouritesHerosLabel.isHidden =
                 state.isFavouritesOnlyFilterOn == false || state.favouriteHeroIds.count > 0
         case .failed:
-            rootView.failedView.isHidden = false
-            rootView.failedView.retryTapped = { [weak self] in
+            actualView.failedView.isHidden = false
+            actualView.failedView.retryTapped = { [weak self] in
                 self?.viewModel.send(action: .retry)
             }
         }

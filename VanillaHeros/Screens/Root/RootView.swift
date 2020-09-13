@@ -8,14 +8,14 @@
 
 import UIKit
 
-class RootView: UIView {
+class RootView: View {
     let loadingView = UIActivityIndicatorView(style: .whiteLarge)
-    let loadedView = LoadedView()
+    let loadedView: LoadedView
     let failedView = FailedView()
     
-    init() {
-        super.init(frame: .zero)
-        setupView()
+    required init(designLibrary: DesignLibrary) {
+        loadedView = LoadedView(designLibrary: designLibrary)
+        super.init(designLibrary: designLibrary)
     }
     
     required init?(coder: NSCoder) {
@@ -30,7 +30,7 @@ class RootView: UIView {
         failedView.isHidden = true
     }
     
-    private func setupView() {
+    override func setupView() {
         backgroundColor = Colors.backgroundColor
         
         addSubview(loadingView)
@@ -44,7 +44,6 @@ class RootView: UIView {
         loadedView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         loadedView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         loadedView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        
         
         addSubview(failedView)
         failedView.translatesAutoresizingMaskIntoConstraints = false
@@ -91,7 +90,7 @@ class LoadedView: UIView, UITableViewDataSource, UITableViewDelegate {
     let tableView = UITableView()
     let noFavouritesHerosLabel = UILabel()
     
-    init() {
+    init(designLibrary: DesignLibrary) {
         super.init(frame: .zero)
         setupView()
     }

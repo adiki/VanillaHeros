@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C1E2D3D250BCD1D0033097F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1E2D3C250BCD1D0033097F /* ViewController.swift */; };
+		2C1E2D40250BCEB80033097F /* DesignLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1E2D3F250BCEB80033097F /* DesignLibrary.swift */; };
+		2C1E2D42250BD09F0033097F /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1E2D41250BD09F0033097F /* View.swift */; };
 		2C4E6CC724F56EE8007F9552 /* FiltersViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4E6CC624F56EE8007F9552 /* FiltersViewModelTests.swift */; };
 		2C4E6CCB24F571EE007F9552 /* FavouritesMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4E6CC924F571E9007F9552 /* FavouritesMock.swift */; };
 		2C4E6CCD24F645A3007F9552 /* Scheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4E6CCC24F645A3007F9552 /* Scheduler.swift */; };
@@ -68,6 +71,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2C1E2D3C250BCD1D0033097F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		2C1E2D3F250BCEB80033097F /* DesignLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignLibrary.swift; sourceTree = "<group>"; };
+		2C1E2D41250BD09F0033097F /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		2C4E6CC624F56EE8007F9552 /* FiltersViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersViewModelTests.swift; sourceTree = "<group>"; };
 		2C4E6CC924F571E9007F9552 /* FavouritesMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesMock.swift; sourceTree = "<group>"; };
 		2C4E6CCC24F645A3007F9552 /* Scheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scheduler.swift; sourceTree = "<group>"; };
@@ -140,6 +146,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2C1E2D3E250BCE940033097F /* DesignLibrary */ = {
+			isa = PBXGroup;
+			children = (
+				2CB3D1A024F3B0A3002FC7FE /* Colors.swift */,
+				2C1E2D3F250BCEB80033097F /* DesignLibrary.swift */,
+			);
+			path = DesignLibrary;
+			sourceTree = "<group>";
+		};
 		2C4E6CC824F571CC007F9552 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -215,6 +230,7 @@
 				2CB3D1A424F3B192002FC7FE /* Architecture */,
 				2CB3D19924F3AF16002FC7FE /* Constants */,
 				2C4E6CC824F571CC007F9552 /* Dependencies */,
+				2C1E2D3E250BCE940033097F /* DesignLibrary */,
 				2CB3D1C724F3D292002FC7FE /* Extensions */,
 				2CB3D1B824F3C577002FC7FE /* Model */,
 				2C921A0724F4520400E79A0A /* Observer */,
@@ -226,7 +242,6 @@
 		2CB3D19924F3AF16002FC7FE /* Constants */ = {
 			isa = PBXGroup;
 			children = (
-				2CB3D1A024F3B0A3002FC7FE /* Colors.swift */,
 				2CB3D19A24F3AF2B002FC7FE /* Images.swift */,
 				2CB3D1C324F3D0E0002FC7FE /* Strings.swift */,
 			);
@@ -239,6 +254,8 @@
 				2CB3D1CA24F3D849002FC7FE /* Effect.swift */,
 				2CB3D1AA24F3B216002FC7FE /* Outcome.swift */,
 				2CB3D1A524F3B1A0002FC7FE /* Store.swift */,
+				2C1E2D41250BD09F0033097F /* View.swift */,
+				2C1E2D3C250BCD1D0033097F /* ViewController.swift */,
 				2CB3D1A824F3B1CD002FC7FE /* ViewModel.swift */,
 			);
 			path = Architecture;
@@ -443,12 +460,15 @@
 				2CB3D19B24F3AF2B002FC7FE /* Images.swift in Sources */,
 				2C921A1124F4536A00E79A0A /* Atomic.swift in Sources */,
 				2CB3D1A324F3B11E002FC7FE /* RootViewModel.swift in Sources */,
+				2C1E2D40250BCEB80033097F /* DesignLibrary.swift in Sources */,
 				2C4E6CDB24F6595C007F9552 /* Result+Extensions.swift in Sources */,
+				2C1E2D42250BD09F0033097F /* View.swift in Sources */,
 				2C86E62324F52CD300172D3B /* FiltersView.swift in Sources */,
 				2C86E61B24F5255900172D3B /* Synchronize.swift in Sources */,
 				2CD629F724F3A87E00F82F3C /* AppDelegate.swift in Sources */,
 				2CB3D19724F3ADD9002FC7FE /* RootBuilder.swift in Sources */,
 				2CB3D1BE24F3CC04002FC7FE /* HerosProvider.swift in Sources */,
+				2C1E2D3D250BCD1D0033097F /* ViewController.swift in Sources */,
 				2C4E6CCD24F645A3007F9552 /* Scheduler.swift in Sources */,
 				2CB3D1D624F3FBDA002FC7FE /* RootRouteController.swift in Sources */,
 				2CB3D1AB24F3B216002FC7FE /* Outcome.swift in Sources */,

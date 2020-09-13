@@ -23,7 +23,10 @@ enum DetailsBuilder {
             environment: environment,
             scheduler: DispatchScheduler(dispatchQueue: .global())
         )
-        return DetailsViewController(viewModel: viewModel)
+        return DetailsViewController(
+            viewModel: viewModel,
+            designLibrary: .current
+        )
     }
 }
 
