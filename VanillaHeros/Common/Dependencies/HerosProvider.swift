@@ -101,13 +101,11 @@ class HerosNetworkProvider: HerosProvider {
         completion: @escaping (Result<T, Error>) -> Void
     ) {
         if let error = error {
-            completion(.failure(ProviderError.networkError(error)))
-            return
+            return completion(.failure(ProviderError.networkError(error)))
         }
         guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
             (200...299).contains(statusCode) else {
-                completion(.failure(ProviderError.serverError))
-            return
+            return completion(.failure(ProviderError.serverError))
         }
         if let data = data {
             do {

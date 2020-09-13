@@ -44,20 +44,29 @@ class FiltersView: View {
     
     override func setupLayout() {
         layoutMargins.top = DesignLibrary.Metrics.Padding.standard
-        
-        addSubview(favouritesLabel)
-        favouritesLabel.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor).isActive = true
-        favouritesLabel.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor).isActive = true
-        
-        addSubview(favouritesSwitch)
-        favouritesSwitch.centerYAnchor.constraint(equalTo: favouritesLabel.centerYAnchor).isActive = true
-        favouritesSwitch.leadingAnchor.constraint(equalTo: favouritesLabel.trailingAnchor).isActive = true
-        favouritesSwitch.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor).isActive = true
-        
-        addSubview(doneButton)
-        doneButton.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor).isActive = true
-        doneButton.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor).isActive = true
-        doneButton.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor).isActive = true
+        add(
+            subview: favouritesLabel,
+            constraints: [
+                favouritesLabel.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+                favouritesLabel.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor)
+            ]
+        )
+        add(
+            subview: favouritesSwitch,
+            constraints: [
+                favouritesSwitch.centerYAnchor.constraint(equalTo: favouritesLabel.centerYAnchor),
+                favouritesSwitch.leadingAnchor.constraint(equalTo: favouritesLabel.trailingAnchor),
+                favouritesSwitch.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            ]
+        )
+        add(
+            subview: doneButton,
+            constraints: [
+                doneButton.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+                doneButton.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+                doneButton.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+            ]
+        )
     }
     
     @objc private func favouritesSwitchValueChanged() {

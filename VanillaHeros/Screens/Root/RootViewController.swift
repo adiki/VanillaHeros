@@ -41,8 +41,8 @@ class RootViewController: ViewController<RootView> {
         case .idle:
             break
         case .loading:
-            actualView.loadingView.isHidden = false
-            actualView.loadingView.startAnimating()
+            actualView.activityIndicatorView.isHidden = false
+            actualView.activityIndicatorView.startAnimating()
         case .loaded:
             actualView.loadedView.isHidden = false
             actualView.loadedView.isFavouritesOnlyFilterOn = state.isFavouritesOnlyFilterOn
@@ -56,7 +56,7 @@ class RootViewController: ViewController<RootView> {
                 self?.viewModel.send(action: .needsPictureForHero(hero: hero))
             }
             actualView.loadedView.noFavouritesHerosLabel.isHidden =
-                state.isFavouritesOnlyFilterOn == false || state.favouriteHeroIds.count > 0
+                state.isFavouritesOnlyFilterOn == false || state.favouriteHeroIds.isEmpty == false
         case .failed:
             actualView.failedView.isHidden = false
             actualView.failedView.retryTapped = { [weak self] in

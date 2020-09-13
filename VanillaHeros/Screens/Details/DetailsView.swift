@@ -33,6 +33,7 @@ class DetailsView: View {
     
     override func setupView() {
         backgroundColor = designLibrary.colors.background
+        heroImageView.backgroundColor = designLibrary.colors.imageViewBackground
         heroNameLabel.font = .preferredFont(forTextStyle: .title2)
         favouritesButton.addTarget(
             self,
@@ -43,29 +44,32 @@ class DetailsView: View {
     }
     
     override func setupLayout() {
-        addSubview(scrollView)
-        scrollView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        scrollView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        scrollView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        scrollView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        
-        scrollView.addSubview(stackView)
-        stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
-        stackView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
-        stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
-        
+        add(
+            subview: scrollView,
+            constraints: [
+                scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                scrollView.topAnchor.constraint(equalTo: topAnchor),
+                scrollView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            ]
+        )
+        scrollView.add(
+            subview: stackView,
+            constraints: [
+                stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+                stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+                stackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+                stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            ]
+        )
         stackView.addArrangedSubview(heroImageView)
         heroImageView.translatesAutoresizingMaskIntoConstraints = false
         heroImageView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
         heroImageView.heightAnchor.constraint(equalTo: heroImageView.widthAnchor).isActive = true
-        
         stackView.addArrangedSubview(heroNameLabel)
-        
         let doublePadding = 2 * DesignLibrary.Metrics.Padding.standard
         stackView.addArrangedSubview(favouritesButton)
         favouritesButton.widthAnchor.constraint(equalTo: widthAnchor, constant: -doublePadding).isActive = true
-        
         stackView.addArrangedSubview(descriptionLabel)
         descriptionLabel.widthAnchor.constraint(equalTo: widthAnchor, constant: -doublePadding).isActive = true
     }

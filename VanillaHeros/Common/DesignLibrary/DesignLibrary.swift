@@ -14,8 +14,11 @@ struct DesignLibrary {
     let label: () -> UILabel
     let imageView: () -> UIImageView
     let `switch`: () -> UISwitch
+    let tableView: () -> UITableView
     let scrollView: () -> UIScrollView
     let stackView: () -> UIStackView
+    let activityIndicatorView: () -> UIActivityIndicatorView
+    let view: () -> UIView
 }
 
 extension DesignLibrary {
@@ -51,7 +54,6 @@ extension DesignLibrary {
             },
             imageView: {
                 let imageView = UIImageView()
-                imageView.backgroundColor = .gray
                 imageView.translatesAutoresizingMaskIntoConstraints = false
                 return imageView
             },
@@ -60,6 +62,9 @@ extension DesignLibrary {
                 `switch`.onTintColor = .red
                 `switch`.translatesAutoresizingMaskIntoConstraints = false
                 return `switch`
+            },
+            tableView: {
+                UITableView()
             },
             scrollView: {
                 let scrollView = UIScrollView()
@@ -73,8 +78,13 @@ extension DesignLibrary {
                 stackView.spacing = Metrics.Padding.standard
                 stackView.alignment = .center
                 stackView.translatesAutoresizingMaskIntoConstraints = false
-                stackView.translatesAutoresizingMaskIntoConstraints = false
                 return stackView
+            },
+            activityIndicatorView: {
+                UIActivityIndicatorView(style: .whiteLarge)
+            },
+            view: {
+                UIView()
             }
         )
     }
