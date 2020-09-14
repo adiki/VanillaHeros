@@ -64,40 +64,7 @@ class RootView: View {
     }
 }
 
-class LoadedView: View, UITableViewDataSource, UITableViewDelegate {
-    var didSelectHero: ((Hero) -> Void)?
-    var needsPictureForHero: ((Hero) -> Void)?
-    var isFavouritesOnlyFilterOn = false
-    var allHeros = [Hero]() {
-        didSet {
-            if isFavouritesOnlyFilterOn {
-                herosToPresent = allHeros.filter {
-                    favouriteHeroIds.contains($0.id)
-                }
-            } else {
-                herosToPresent = allHeros
-            }
-        }
-    }
-    var herosToPresent = [Hero]() {
-        didSet {
-            if herosToPresent != oldValue {
-                tableView.reloadData()
-            }
-        }
-    }
-    var herosToImageData = [Hero: Data]() {
-        didSet {
-            reloadImages()
-        }
-    }
-    var favouriteHeroIds = Set<Int>() {
-        didSet {
-            if favouriteHeroIds != oldValue {
-                reloadVisibleCells()
-            }            
-        }
-    }
+class LoadedView: View {
     let tableView: UITableView
     let noFavouritesHerosLabel: UILabel
     
@@ -116,8 +83,6 @@ class LoadedView: View, UITableViewDataSource, UITableViewDelegate {
         tableView.backgroundColor = designLibrary.colors.background
         tableView.register(HeroCell.self)
         tableView.separatorStyle = .none
-        tableView.dataSource = self
-        tableView.delegate = self
         noFavouritesHerosLabel.text = Strings.noFavouritesHeros
     }
     
@@ -138,57 +103,6 @@ class LoadedView: View, UITableViewDataSource, UITableViewDelegate {
                 noFavouritesHerosLabel.centerYAnchor.constraint(equalTo: layoutMarginsGuide.centerYAnchor)
             ]
         )
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        herosToPresent.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let heroCell = tableView.dequeueReusableCell(HeroCell.self)
-        configure(heroCell: heroCell, indexPath: indexPath)
-        return heroCell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let hero = herosToPresent[indexPath.row]
-        didSelectHero?(hero)
-    }
-    
-    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    
-    private func reloadImages() {
-        tableView.reloadVisibleCells(
-            predicate: { indexPath in
-                let hero = herosToPresent[indexPath.row]
-                return herosToImageData[hero] != nil
-            },
-            configure: configure(heroCell:indexPath:)
-        )
-    }
-    
-    private func reloadVisibleCells() {
-        tableView.reloadVisibleCells(
-            configure: configure(heroCell:indexPath:)
-        )
-    }
-    
-    private func configure(heroCell: HeroCell, indexPath: IndexPath) {
-        let hero = herosToPresent[indexPath.row]
-        if let heroImage = herosToImageData[hero].flatMap(UIImage.init(data:)) {
-            heroCell.heroImageView.image = heroImage
-        } else {
-            needsPictureForHero?(hero)
-        }
-        if favouriteHeroIds.contains(hero.id) {
-            heroCell.nameLabel.text = "\("⭐️") \(hero.name)"
-        } else {
-            heroCell.nameLabel.text = hero.name
-        }
-        
-        heroCell.selectionStyle = .none
     }
 }
 

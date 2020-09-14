@@ -11,6 +11,38 @@ import UIKit
 class RootViewController: ViewController<RootView> {
     private let viewModel: RootViewModel
     
+    private var isFavouritesOnlyFilterOn = false
+    private var allHeros = [Hero]() {
+        didSet {
+            if isFavouritesOnlyFilterOn {
+                herosToPresent = allHeros.filter {
+                    favouriteHeroIds.contains($0.id)
+                }
+            } else {
+                herosToPresent = allHeros
+            }
+        }
+    }
+    private var herosToPresent = [Hero]() {
+        didSet {
+            if herosToPresent != oldValue {
+                actualView.loadedView.tableView.reloadData()
+            }
+        }
+    }
+    private var herosToImageData = [Hero: Data]() {
+        didSet {
+            reloadImages()
+        }
+    }
+    private var favouriteHeroIds = Set<Int>() {
+        didSet {
+            if favouriteHeroIds != oldValue {
+                reloadVisibleCells()
+            }
+        }
+    }
+    
     init(
         viewModel: RootViewModel,
         designLibrary: DesignLibrary
@@ -30,6 +62,12 @@ class RootViewController: ViewController<RootView> {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func loadView() {
+        super.loadView()
+        actualView.loadedView.tableView.dataSource = self
+        actualView.loadedView.tableView.delegate = self
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
@@ -44,17 +82,11 @@ class RootViewController: ViewController<RootView> {
             actualView.activityIndicatorView.isHidden = false
             actualView.activityIndicatorView.startAnimating()
         case .loaded:
+            isFavouritesOnlyFilterOn = state.isFavouritesOnlyFilterOn
+            herosToImageData = state.herosToImageData
+            favouriteHeroIds = state.favouriteHeroIds
+            allHeros = state.heros
             actualView.loadedView.isHidden = false
-            actualView.loadedView.isFavouritesOnlyFilterOn = state.isFavouritesOnlyFilterOn
-            actualView.loadedView.herosToImageData = state.herosToImageData
-            actualView.loadedView.favouriteHeroIds = state.favouriteHeroIds
-            actualView.loadedView.allHeros = state.heros
-            actualView.loadedView.didSelectHero = { [weak self] hero in
-                self?.viewModel.send(action: .didSelect(hero: hero))
-            }
-            actualView.loadedView.needsPictureForHero = { [weak self] hero in
-                self?.viewModel.send(action: .needsPictureForHero(hero: hero))
-            }
             actualView.loadedView.noFavouritesHerosLabel.isHidden =
                 state.isFavouritesOnlyFilterOn == false || state.favouriteHeroIds.isEmpty == false
         case .failed:
@@ -77,5 +109,58 @@ class RootViewController: ViewController<RootView> {
     
     @objc private func filtersItemTapped() {
         viewModel.send(action: .openFilters)
+    }
+}
+
+extension RootViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        herosToPresent.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let heroCell = tableView.dequeueReusableCell(HeroCell.self)
+        configure(heroCell: heroCell, indexPath: indexPath)
+        return heroCell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let hero = herosToPresent[indexPath.row]
+        viewModel.send(action: .didSelect(hero: hero))
+    }
+    
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    private func reloadImages() {
+        actualView.loadedView.tableView.reloadVisibleCells(
+            predicate: { indexPath in
+                let hero = herosToPresent[indexPath.row]
+                return herosToImageData[hero] != nil
+            },
+            configure: configure(heroCell:indexPath:)
+        )
+    }
+    
+    private func reloadVisibleCells() {
+        actualView.loadedView.tableView.reloadVisibleCells(
+            configure: configure(heroCell:indexPath:)
+        )
+    }
+    
+    private func configure(heroCell: HeroCell, indexPath: IndexPath) {
+        let hero = herosToPresent[indexPath.row]
+        if let heroImage = herosToImageData[hero].flatMap(UIImage.init(data:)) {
+            heroCell.heroImageView.image = heroImage
+        } else {
+            viewModel.send(action: .needsPictureForHero(hero: hero))
+        }
+        if favouriteHeroIds.contains(hero.id) {
+            heroCell.nameLabel.text = "\("⭐️") \(hero.name)"
+        } else {
+            heroCell.nameLabel.text = hero.name
+        }
+        
+        heroCell.selectionStyle = .none
     }
 }
